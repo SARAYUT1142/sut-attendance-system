@@ -36,6 +36,14 @@ pipeline {
                 sh "docker rmi ${DOCKER_IMAGE} || true"
             }
         }
+
+        stage('Checkout Code') {
+           steps {
+        deleteDir()
+        git branch: 'main',
+            url: 'https://github.com/SARAYUT1142/sut-attendance-system.git'
+    }
+}
     }
 
     post {
