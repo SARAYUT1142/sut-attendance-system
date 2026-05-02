@@ -6,7 +6,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
         
         // ⚠️ สำคัญ: เปลี่ยน [YOUR_DOCKERHUB_USERNAME] เป็น Username ของคุณ
-        DOCKER_IMAGE = "[YOUR_DOCKERHUB_USERNAME]/sut-attendance-frontend:latest"
+        DOCKER_IMAGE = "sarayut1142/sut-attendance-frontend:latest"
     }
 
     stages {
