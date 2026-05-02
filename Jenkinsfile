@@ -12,9 +12,10 @@ pipeline {
             steps {
                 deleteDir()
                 git branch: 'main',
+                    credentialsId: 'github-creds',
                     url: 'https://github.com/SARAYUT1142/sut-attendance-system.git'
             }
-        }
+}
 
         stage('Build Docker Image') {
             steps {
