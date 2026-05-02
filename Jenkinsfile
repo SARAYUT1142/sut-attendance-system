@@ -15,31 +15,31 @@ pipeline {
                     credentialsId: 'github-creds',
                     url: 'https://github.com/SARAYUT1142/sut-attendance-system.git'
             }
-}
+        }
 
         stage('Build Docker Image') {
             steps {
-                sh "${DOCKER} build -t ${DOCKER_IMAGE} ."
+                sh "/usr/bin/docker build -t ${DOCKER_IMAGE} ./frontend"
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                sh "echo $DOCKERHUB_CREDENTIALS_PSW | ${DOCKER} login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
-                sh "${DOCKER} push ${DOCKER_IMAGE}"
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | /usr/bin/docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh "/usr/bin/docker push ${DOCKER_IMAGE}"
             }
         }
 
         stage('Clean Up') {
             steps {
-                sh "${DOCKER} rmi ${DOCKER_IMAGE} || true"
+                sh "/usr/bin/docker rmi ${DOCKER_IMAGE} || true"
             }
         }
     }
 
     post {
         always {
-            sh "${DOCKER} logout || true"
+            sh '/usr/bin/docker logout || true'
         }
         success {
             echo '✅ สำเร็จ!'

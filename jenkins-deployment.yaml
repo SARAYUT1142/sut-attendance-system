@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 50000
+          name: agent
+          protocol: TCP
+        env:
+        - name: DOCKER_HOST
+          value: tcp://localhost:2375
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /login
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /login
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 40
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /var/jenkins_home
+          name: jenkins-data
+      - name: dind
+        image: docker:27-dind
+        securityContext:
+          privileged: true
+        env:
+        - name: DOCKER_TLS_CERTDIR
+          value: ""
+        ports:
+        - containerPort: 2375
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /var/lib/docker
+          name: docker-data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: jenkins-data
+        persistentVolumeClaim:
+          claimName: jenkins-pvc
+      - name: docker-data
+        emptyDir: {}
