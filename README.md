@@ -68,15 +68,16 @@ Developer
 
 ```
 sut-attendance/
-├── frontend/               # React application code
-│   ├── src/
-│   ├── package.json
-│   └── Dockerfile          # Build React as static files
-├── backend/                # Go Gin application code
-│   ├── main.go             # Entry point
-│   ├── models/             # GORM data models
-│   ├── go.mod
-│   └── Dockerfile          # Build Go binary image
+├── app/
+│   ├── frontend/               # React application code
+│   │   ├── src/
+│   │   ├── package.json
+│   │   └── Dockerfile          # Build React as static files
+│   └── backend/                # Go Gin application code
+│       ├── main.go             # Entry point
+│       ├── models/             # GORM data models
+│       ├── go.mod
+│       └── Dockerfile
 ├── Jenkinsfile             # CI/CD pipeline definition
 ├── terraform/              # Provisioning resources
 ├── ansible/                # Config server & Postgres setup
