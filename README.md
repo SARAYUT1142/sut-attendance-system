@@ -8,10 +8,10 @@
 
 | รหัสนักศึกษา | ชื่อ-นามสกุล | ความรับผิดชอบ |
 |-------------|-------------|---------------|
+| B6608064 | นายธีรชัย มีดี | Kubernetes, Monitoring |
+| B6608347 | นางสาวอรปรียา แตงอ่อน  | Git, App Development |
 | B6618599 | นายสรายุทธ อินทร์โสภา | Jenkins, Docker |
-| 6XXXXXXX | ชื่อ นามสกุล | Git, App Development |
-| 6XXXXXXX | ชื่อ นามสกุล | Terraform, Ansible |
-| 6XXXXXXX | ชื่อ นามสกุล | Kubernetes, Monitoring |
+| B6629304 | นายเจษฎา ชาวยศ | Terraform, Ansible |
 
 ---
 
