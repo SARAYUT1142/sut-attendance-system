@@ -1,6 +1,7 @@
 pipeline {
     agent any 
     
+    
     environment {
         // อ้างอิง ID ของรหัสผ่านที่เราเพิ่งตั้งไว้ใน Jenkins
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
