@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        DOCKER_IMAGE = "sarayut12134/sut-attendance-frontend:latest"
+        DOCKER_IMAGE = "sarayut1234/sut-attendance-frontend:latest"
         DOCKER = '/usr/bin/docker'
     }
 
