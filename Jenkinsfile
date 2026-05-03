@@ -34,6 +34,8 @@ pipeline {
             steps {
                 // 1. สั่ง Apply ไฟล์ทั้งหมดในโฟลเดอร์ k8s/frontend/
                 sh 'kubectl apply -f k8s/frontend/'
+
+                sh 'kubectl apply -f k8s/ingress.yaml'
                 
                 // 2. บังคับให้ Kubernetes ดึง Image ล่าสุดไปอัปเดต Pod ทันที
                 sh 'kubectl rollout restart deployment/sut-attendance-frontend -n default'
