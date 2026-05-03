@@ -13,7 +13,7 @@ pipeline {
                 deleteDir()
                 git branch: 'main',
                     credentialsId: 'github-creds',
-                    url: 'https://github.com/SARAYUT1142/sut-attendance-system.git'
+                    url: 'https://github.com/SARAYUT1234/sut-attendance-system.git'
             }
         }
 
