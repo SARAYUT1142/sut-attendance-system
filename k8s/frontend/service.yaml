@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: attendance-frontend-svc
+  namespace: default
+spec:
+  type: ClusterIP # ซ่อนพอร์ตไว้ใช้แค่ภายใน Cluster เท่านั้น (ปลอดภัยกว่า)
+  selector:
+    app: attendance-frontend # ต้องตรงกับ Labels ใน Deployment
+  ports:
+    - protocol: TCP
+      port: 80 # พอร์ตของ Service
+      targetPort: 80 # พอร์ตของ Nginx/HTML ใน Container

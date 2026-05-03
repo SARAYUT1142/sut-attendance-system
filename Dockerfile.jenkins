@@ -1,4 +1,11 @@
 FROM jenkins/jenkins:lts
 USER root
+
+# ติดตั้ง Docker CLI
 RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/*
+
+# Copy kubectl จากเครื่อง Windows เข้า image โดยการ load kubectl  project ก่อน
+COPY kubectl /usr/local/bin/kubectl
+RUN chmod +x /usr/local/bin/kubectl
+
 USER jenkins

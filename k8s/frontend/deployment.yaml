@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment  # บอก Kubernetes ว่านี่คือ Deployment 
+metadata:
+  name: sut-attendance-frontend # ชื่อ Deployment
+  namespace: default
+  labels:
+    app: attendance-frontend   # label สำหรับอ้างอิง
+spec:
+  replicas: 2                  # รัน 2 Pod พร้อมกัน
+  selector:
+    matchLabels:
+      app: attendance-frontend  # บอก Deployment ว่าให้ดูแล Pod ที่มี label app: attendance-frontend เท่านั้น
+  template:
+    metadata:
+      labels:
+        app: attendance-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: sarayut1234/sut-attendance-frontend:latest  ## image จาก Docker Hub  image ต้องตามชื่อที่เราสร้างถ้าหากเรา custome เอง เอามาจาก Jenkinsfile  บรรทัดนี้ ${DOCKER_IMAGE} ./frontend
+        imagePullPolicy: Always   # บังคับให้ K8s ดึง Image ใหม่ทุกครั้งที่มีการ Deploy
+        ports:
+        - containerPort: 80       # เปิด port 80 (nginx)
+          name: http
+        # กำหนดทรัพยากรพื้นฐานให้ HTML Frontend (กินสเปคน้อยมาก)
+        resources:
+          requests:           # ขอ resource ขั้นต่ำ
+            cpu: 100m         # 0.1 core
+            memory: 128Mi     # 128 MB 
+          limits:             # ใช้ได้สูงสุด
+            cpu: 250m         # 0.25 core
+            memory: 256Mi     # 256 MB

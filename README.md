@@ -81,10 +81,23 @@ sut-attendance/
 ├── Jenkinsfile             # CI/CD pipeline definition
 ├── terraform/              # Provisioning resources
 ├── ansible/                # Config server & Postgres setup
-├── k8s/
-│   ├── deployment.yaml     # Deployment for React & Go
-│   ├── service.yaml        # NodePort services
-│   └── postgres.yaml       # Database setup in K8s
+├── k8s/                    # โฟลเดอร์เก็บไฟล์ Kubernetes ทั้งหมด
+│    │
+│   ├── frontend/           # กลุ่มไฟล์สำหรับหน้าบ้าน
+│    │   ├── deployment.yaml
+│    │   └── service.yaml
+│    │
+│    ├── backend/            # กลุ่มไฟล์สำหรับ API หลังบ้าน
+│    │   ├── deployment.yaml  # Deployment for React & Go
+│    │   └── service.yaml
+│    │
+│    ├── database/           # กลุ่มไฟล์สำหรับฐานข้อมูล
+│    │   ├── deployment.yaml (หรือ StatefulSet)
+│    │   ├── service.yaml
+│    │   ├── pvc.yaml        # 🚨 จำเป็นต้องมีเพื่อไม่ให้ข้อมูลนักศึกษาหาย
+│    │   └── secret.yaml     # ซ่อน Username/Password ของ DB ให้ปลอดภัย
+│    │
+│    └── ingress.yaml        # ย้ายพนักงานต้อนรับมาไว้ข้างนอกสุด เพื่อจัดการเส้นทางทั้งระบบ
 ├── monitoring/
 └── README.md
 ```

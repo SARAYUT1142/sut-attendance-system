@@ -24,8 +24,8 @@ spec:
         fsGroup: 1000
       containers:
       - name: jenkins
-        image: jenkins/jenkins:lts
-        imagePullPolicy: IfNotPresent
+        image: sarayut1234/jenkins-docker:lts
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           name: http
@@ -63,8 +63,10 @@ spec:
         volumeMounts:
         - mountPath: /var/jenkins_home
           name: jenkins-data
+
       - name: dind
         image: docker:27-dind
+        imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
         env:
@@ -80,6 +82,7 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/docker
           name: docker-data
+
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       terminationGracePeriodSeconds: 30

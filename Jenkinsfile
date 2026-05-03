@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        DOCKER_IMAGE = "sarayut1142/sut-attendance-frontend:latest"
+        DOCKER_IMAGE = "sarayut12134/sut-attendance-frontend:latest"
         DOCKER = '/usr/bin/docker'
     }
 
@@ -27,6 +27,16 @@ pipeline {
             steps {
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | /usr/bin/docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh "/usr/bin/docker push ${DOCKER_IMAGE}"
+            }
+        }
+
+        stage('Deploy to K8s') {
+            steps {
+                // 1. สั่ง Apply ไฟล์ทั้งหมดในโฟลเดอร์ k8s/frontend/
+                sh 'kubectl apply -f k8s/frontend/'
+                
+                // 2. บังคับให้ Kubernetes ดึง Image ล่าสุดไปอัปเดต Pod ทันที
+                sh 'kubectl rollout restart deployment/sut-attendance-frontend -n default'
             }
         }
 

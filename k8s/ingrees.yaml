@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: attendance-ingress
+  namespace: default
+  annotations:
+    # บอก K8s ว่าให้ใช้ Nginx Ingress Controller ที่รันอยู่จัดการ
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: sut-attendance-system  # รับเฉพาะ request ที่มาจาก domain นี้
+    http:
+      paths:
+      - path: /                  # ทุก path ที่ขึ้นต้นด้วย /
+        pathType: Prefix
+        backend:
+          service:
+            name: attendance-frontend-svc # อ้างอิงไปหา Service ของเรา  โดยส่งต่อไปหา Service นี้
+            port:
+              number: 80
