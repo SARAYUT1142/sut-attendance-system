@@ -6,3 +6,5 @@
 > อย่าลืมแก้ base_api ก่อน deploy -> ./service/api.js [Ln 1]
 
 > อย่าลืมแก้ url สำหรับให้นักศึกษาเช็คอินผ่าน QR code ก่อน deploy -> ./page/SessionDetailPage.jsx [Ln 22]
+
+- qr สแกนด้วยมือถือได้แต่ต้องใช้ wifi เดียวกับคอม
