@@ -79,3 +79,18 @@ func getAttendanceReport(c *gin.Context) {
 	db.Where("session_id = ?", sessionID).Find(&attendances)
 	c.JSON(http.StatusOK, attendances)
 }
+
+func updateSession(c *gin.Context) {
+	sessionID := c.Param("id")
+	var session Session
+	if err := db.First(&session, sessionID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Session not found"})
+		return
+	}
+	if err := c.ShouldBindJSON(&session); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	db.Save(&session)
+	c.JSON(http.StatusOK, session)
+}

@@ -1,11 +1,19 @@
 package main
 
 import (
+	"log"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	
+	err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+
 	InitDB()
 
 	r := gin.Default()
@@ -45,6 +53,7 @@ func main() {
 			protected.PATCH("/sessions/:id/toggle", toggleSessionStatus)
 			protected.DELETE("/sessions/:id", deleteSession)
 			protected.GET("/sessions/:id/report", getAttendanceReport)
+			protected.PUT("/sessions/:id", updateSession)
 		}
 	}
 
