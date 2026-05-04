@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: sarayut1234/sut-attendance-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          value: "sut-postgres-service"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_NAME
+          value: "sut_attendance"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sut-attendance-secret
+              key: db-password
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: sut-attendance-secret
+              key: jwt-secret
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health     # ← เปลี่ยนให้ตรงกับ endpoint จริงของ backend
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health     # ← เปลี่ยนให้ตรงกับ endpoint จริงของ backend
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          failureThreshold: 3

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: default
+spec:
+  type: ClusterIP # ใช้ ClusterIP เพราะเราจะให้แค่คนใน K8s (หรือ Ingress) คุยด้วยเท่านั้น
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

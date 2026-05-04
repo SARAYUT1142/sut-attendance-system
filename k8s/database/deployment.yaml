@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine # ใช้เวอร์ชัน Alpine เพื่อความเบาและปลอดภัย
+        ports:
+        - containerPort: 5432
+        env:
+        # 🚨 ดึงรหัสผ่านแบบปลอดภัยจาก Secret ที่เราสร้างไว้
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sut-attendance-secret
+              key: db-password
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_DB
+          value: "sut_attendance" # ชื่อ Database เริ่มต้นที่ให้สร้างขึ้นมา
+        
+        # 💾 สั่งให้เซฟข้อมูลลงใน PVC เพื่อกันข้อมูลหาย
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc

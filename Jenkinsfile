@@ -3,7 +3,9 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        DOCKER_IMAGE = "sarayut1234/sut-attendance-frontend:latest"
+        // 1. แยกตัวแปร Image ให้ชัดเจนทั้งหน้าบ้านและหลังบ้าน
+        FRONTEND_IMAGE = "sarayut1234/sut-attendance-frontend:latest"
+        BACKEND_IMAGE  = "sarayut1234/sut-attendance-backend:latest"
         DOCKER = '/usr/bin/docker'
     }
 
@@ -17,34 +19,43 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker Images') {
             steps {
-                sh "/usr/bin/docker build -t ${DOCKER_IMAGE} ./frontend"
+                // 2. สั่ง Build ทีเดียวทั้งคู่
+                sh "/usr/bin/docker build -t ${FRONTEND_IMAGE} ./frontend"
+                sh "/usr/bin/docker build -t ${BACKEND_IMAGE} ./backend"
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | /usr/bin/docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh "/usr/bin/docker push ${DOCKER_IMAGE}"
+                // 3. ดันขึ้น Docker Hub ทั้งคู่
+                sh "/usr/bin/docker push ${FRONTEND_IMAGE}"
+                sh "/usr/bin/docker push ${BACKEND_IMAGE}"
             }
         }
 
         stage('Deploy to K8s') {
             steps {
-                // 1. สั่ง Apply ไฟล์ทั้งหมดในโฟลเดอร์ k8s/frontend/
+                // 4. สั่ง Apply โฟลเดอร์ K8s ทั้งระบบตามลำดับ (Database ต้องมาก่อน)
+                sh 'kubectl apply -f k8s/database/'
+                sh 'kubectl apply -f k8s/backend/'
                 sh 'kubectl apply -f k8s/frontend/'
-
                 sh 'kubectl apply -f k8s/ingress.yaml'
                 
-                // 2. บังคับให้ Kubernetes ดึง Image ล่าสุดไปอัปเดต Pod ทันที
+                // 5. บังคับให้ Kubernetes ดึง Image ล่าสุดไปอัปเดต Pod ทันที ทั้งสองฝั่ง
+                // (ถ้าคุณตั้งชื่อ deployment ของ backend เป็นอย่างอื่น อย่าลืมแก้บรรทัดนี้นะครับ)
                 sh 'kubectl rollout restart deployment/sut-attendance-frontend -n default'
+                sh 'kubectl rollout restart deployment/backend-deployment -n default'
             }
         }
 
         stage('Clean Up') {
             steps {
-                sh "/usr/bin/docker rmi ${DOCKER_IMAGE} || true"
+                // 6. ลบขยะ Image ออกทั้งสองตัว
+                sh "/usr/bin/docker rmi ${FRONTEND_IMAGE} || true"
+                sh "/usr/bin/docker rmi ${BACKEND_IMAGE} || true"
             }
         }
     }
@@ -54,10 +65,10 @@ pipeline {
             sh '/usr/bin/docker logout || true'
         }
         success {
-            echo '✅ สำเร็จ!'
+            echo '✅ อัปเดตระบบ SUT Attendance System ทั้ง Frontend และ Backend สำเร็จแล้ว!'
         }
         failure {
-            echo '❌ ล้มเหลว'
+            echo '❌ ล้มเหลว กรุณาตรวจสอบ Log ใน Jenkins'
         }
     }
 }
