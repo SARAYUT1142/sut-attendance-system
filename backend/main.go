@@ -23,6 +23,11 @@ func main() {
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
 	r.Use(cors.New(config))
 
+	// Health check endpoint สำหรับ Kubernetes probe
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+
 	api := r.Group("/api")
 	{
 		api.POST("/auth/register", registerTeacher)
