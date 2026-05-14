@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc #ข้อควรระวัง การเชื่อมต่อ Storage: Pod จะมองหา PVC ผ่านทางชื่อ metadata.name (นั่นคือ grafana-pvc) เท่านั้น
+  labels: 
+    app: my-grafana #ช่วยให้ใช้คำสั่ง kubectl get pvc -l app=my-grafana เพื่อกรองดูเฉพาะ PVC ที่เกี่ยวข้องกับโปรเจกต์นี้ได้
+spec:
+  accessModes:
+    - ReadWriteOnce   #อนุญาตให้ Node เดียวเท่านั้น ที่สามารถ Mount ดิสก์ลูกนี้เพื่ออ่านและเขียนข้อมูลได้
+  resources:
+    requests:
+      storage: 1Gi

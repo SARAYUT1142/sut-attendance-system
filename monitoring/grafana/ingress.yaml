@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: grafana.local  # Domain ที่ต้องไปใส่ในไฟล์ hosts
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana  # ชื่อของ Service ปลายทาง (ต้องสะกดให้ตรงเป๊ะ)
+            port:
+              number: 3000

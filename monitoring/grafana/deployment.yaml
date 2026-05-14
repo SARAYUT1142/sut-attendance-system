@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: my-grafana
+spec:
+  replicas: 1  #แม้จะตั้งค่าเป็น ReadWriteMany แต่ Grafana ตัวเริ่มต้นใช้ฐานข้อมูลแบบ SQLite (ไฟล์ .db ภายในเครื่อง) ซึ่งอาจทำให้ข้อมูลพังได้
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana  # ต้องตรงกับ matchLabels ด้านบน เพื่อให้ Deployment ควบคุมได้
+    spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+            - 0
+      containers:
+      - name: grafana                      # ชื่อของ Container (ตั้งชื่อให้เรียกง่ายในการจัดการ)
+        image: grafana/grafana:latest      # Image ที่ใช้รัน (ดึงเวอร์ชันล่าสุดจาก Docker Hub)
+        imagePullPolicy: IfNotPresent      # นโยบายการดึง Image: ถ้าในเครื่องมีอยู่แล้วให้ใช้ของเดิม ไม่ต้องโหลดใหม่
+        ports:
+          - containerPort: 3000            # พอร์ตภายในที่ตัวโปรแกรม Grafana เปิดใช้งาน
+            name: http-grafana             # # ชื่อพอร์ตที่ Service จะอ้างอิงมาหา
+            protocol: TCP
+        readinessProbe:                    # ตรวจสอบความพร้อม: "โหลดโปรแกรมเสร็จพร้อมรับแขกหรือยัง?"
+          failureThreshold: 3              # ถ้าเช็คแล้วพลาดติดต่อกัน 3 ครั้ง จะถือว่าไม่พร้อม
+          httpGet:                         # วิธีเช็ค: ลองเรียกหน้าเว็บผ่าน HTTP GET
+            path: /robots.txt              # Path ที่ใช้เช็ค (Grafana มักใช้หน้า robots หรือ /api/health)
+            port: 3000                     # พอร์ตที่เข้าไปเช็ค
+            scheme: HTTP
+          initialDelaySeconds: 10          # หลังจาก Start Container ให้รอ 10 วินาทีก่อนเริ่มเช็คครั้งแรก
+          periodSeconds: 30                # ให้วนกลับมาเช็คซ้ำทุกๆ 30 วินาที
+          successThreshold: 1              # เช็คผ่านแค่ 1 ครั้งถือว่าผ่าน
+          timeoutSeconds: 2                # ถ้ารอคำตอบนานเกิน 2 วินาที ให้ถือว่าล้มเหลวในรอบนั้น
+        livenessProbe:                     # ตรวจสอบการมีชีวิต: "โปรแกรมค้างหรือตายไปแล้วหรือยัง?"
+          failureThreshold: 3              # ถ้าสะกิดแล้วไม่ตอบสนอง 3 ครั้งติดต่อกัน ระบบจะรีสตาร์ท Pod ทันที
+          initialDelaySeconds: 30          # รอ 30 วินาทีให้โปรแกรมรันตัวเสร็จก่อนเริ่มสะกิดเช็ค
+          periodSeconds: 10                # วนเช็คทุกๆ 10 วินาที (เช็คบ่อยกว่า Readiness เพราะสำคัญต่อความเสถียร)
+          successThreshold: 1
+          tcpSocket:                       # วิธีเช็ค: ลองเชื่อมต่อ (Connect) ไปที่พอร์ต 3000 ดูว่ายังตอบสนองไหม
+            port: 3000
+          timeoutSeconds: 1
+        resources:                         # การบริหารจัดการทรัพยากร (กันไม่ให้รบกวน Pod อื่น)
+          requests:                        # ทรัพยากรขั้นต่ำที่ต้องจองไว้ให้ Pod นี้
+            cpu: 250m                      # จอง CPU 0.25 Core
+            memory: 750Mi                  # จอง RAM 750 Megabytes
+        volumeMounts:                      # การนำ "ฮาร์ดดิสก์" มาเสียบเข้ากับ Container
+          - mountPath: /var/lib/grafana    # ตำแหน่งใน Container ที่ต้องการให้ข้อมูลไปเก็บ (ห้ามหาย)
+            name: grafana-pv               # ชื่อของ Volume (ต้องตรงกับส่วน volumes ด้านล่างของไฟล์)
+
+      volumes:                      # ส่วนที่ประกาศว่า Pod นี้มี "ฮาร์ดดิสก์" ก้อนไหนให้ใช้บ้าง
+        - name: grafana-pv           # ตั้งชื่อให้กับฮาร์ดดิสก์ก้อนนี้ (ต้องตรงกับชื่อใน volumeMounts)
+          persistentVolumeClaim:    # ระบุว่าเราจะเอาพื้นที่มาจาก "ใบจอง" (PVC)
+            claimName: grafana-pvc  # ระบุชื่อของใบจอง (PVC) ที่เราสร้างไว้ก่อนหน้านี้

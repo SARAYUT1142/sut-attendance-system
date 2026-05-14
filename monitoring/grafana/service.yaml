@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: my-grafana
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: http-grafana # ตรงกับชื่อพอร์ตใน Deployment
+  selector:
+    app: grafana # ต้องตรงกับ labal ใน deployment
+  sessionAffinity: None
+  type: ClusterIP
