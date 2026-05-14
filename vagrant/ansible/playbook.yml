@@ -1,15 +1,13 @@
 ---
 - name: Setup SUT Attendance Server
-  hosts: all
+  hosts: local
   become: true
 
   tasks:
-    # 1. อัปเดต package list
     - name: Update apt cache
       apt:
         update_cache: yes
 
-    # 2. ติดตั้ง dependencies
     - name: Install dependencies
       apt:
         name:
@@ -21,7 +19,6 @@
           - gnupg
         state: present
 
-    # 3. ติดตั้ง Docker
     - name: Add Docker GPG key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
@@ -52,7 +49,6 @@
         groups: docker
         append: yes
 
-    # 4. ติดตั้ง k3s (Kubernetes แบบเบา)
     - name: Install k3s
       shell: curl -sfL https://get.k3s.io | sh -
       args:
@@ -63,17 +59,8 @@
         path: /etc/rancher/k3s/k3s.yaml
         timeout: 60
 
-    # 5. ตั้งค่า kubectl
     - name: Copy k3s config for vagrant user
       shell: |
         mkdir -p /home/vagrant/.kube
         cp /etc/rancher/k3s/k3s.yaml /home/vagrant/.kube/config
         chown vagrant:vagrant /home/vagrant/.kube/config
-
-    - name: Verify k3s installation
-      shell: k3s kubectl get nodes
-      register: k3s_nodes
-
-    - name: Show k3s nodes
-      debug:
-        msg: "{{ k3s_nodes.stdout }}"

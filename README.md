@@ -79,10 +79,15 @@ sut-attendance/
 │       ├── go.mod
 │       └── Dockerfile
 ├── Jenkinsfile             # CI/CD pipeline definition
-├── terraform/
-│   ├── main.tf          # ไฟล์หลักสำหรับสั่งสร้าง VM
-│   └── variables.tf     # เก็บตัวแปรต่างๆ
-└── ansible/
+│
+├── vagrant/                    # ← เปลี่ยนจาก terraform/
+│   └── Vagrantfile             # สร้าง VM ด้วย Vagrant
+│
+├── terraform/                  # ← เก็บไว้สำหรับ Cloud ในอนาคต
+│   ├── main.tf
+│   └── variables.tf
+│
+├── ansible/
 │    └── playbook.yml     # ไฟล์สำหรับเข้าไปเซ็ตอัพเครื่องหลังสร้างเสร็จ
 ├── ansible/                # Config server & Postgres setup
 ├── k8s/                    # โฟลเดอร์เก็บไฟล์ Kubernetes ทั้งหมด
