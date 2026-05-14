@@ -32,7 +32,7 @@ const LoginView = ({ token, onAuthSuccess }) => {
           <ShieldCheck className="text-white w-12 h-12" />
         </div>
         <h2 className="text-4xl font-black text-slate-900 mb-2 tracking-tighter">เช็คชื่อ</h2>
-        <p className="text-slate-400 mb-10 font-medium text-sm uppercase tracking-[0.2em]">ระบบจัดการการเข้าเรียน</p>
+        <p className="text-slate-400 mb-10 font-medium text-sm uppercase tracking-[0.2em]">ระบบจัดการการเข้าเรียนlllllll</p>
 
         <form onSubmit={handleLogin} className="space-y-5 text-left">
           <div className="group space-y-1">

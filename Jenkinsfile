@@ -45,7 +45,7 @@ pipeline {
                 sh 'kubectl apply -f k8s/ingress.yaml'
                 
                 // 5. บังคับให้ Kubernetes ดึง Image ล่าสุดไปอัปเดต Pod ทันที ทั้งสองฝั่ง
-                // (ถ้าคุณตั้งชื่อ deployment ของ backend เป็นอย่างอื่น อย่าลืมแก้บรรทัดนี้นะครับ)
+                // (ถ้าคุณตั้งชื่อ deployment ของ backend เป็นอย่างอื่น อย่าลืมแก้บรรทัดนี้)
                 sh 'kubectl rollout restart deployment/sut-attendance-frontend -n default'
                 sh 'kubectl rollout restart deployment/backend-deployment -n default'
             }
