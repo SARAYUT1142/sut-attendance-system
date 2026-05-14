@@ -22,7 +22,7 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 // 2. สั่ง Build ทีเดียวทั้งคู่
-                sh "/usr/bin/docker build -t ${FRONTEND_IMAGE} ./frontend"
+                sh "/usr/bin/docker build --no-cache -t ${FRONTEND_IMAGE} ./frontend"
                 sh "/usr/bin/docker build -t ${BACKEND_IMAGE} ./backend"
             }
         }
