@@ -1,3 +1,14 @@
+package main
+
+import (
+    "fmt"
+    "os"
+    "gorm.io/driver/postgres"
+    "gorm.io/gorm"
+)
+
+var db *gorm.DB
+
 func InitDB() {
     var dsn string
 
