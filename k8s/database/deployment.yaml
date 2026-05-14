@@ -4,6 +4,7 @@ metadata:
   name: postgres-deployment
   namespace: default
 spec:
+  progressDeadlineSeconds: 300  # ← ต้องอยู่ตรงนี้
   replicas: 1
   selector:
     matchLabels:
@@ -15,11 +16,11 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:15-alpine # ใช้เวอร์ชัน Alpine เพื่อความเบาและปลอดภัย
+        image: postgres:15-alpine
+        imagePullPolicy: Always
         ports:
         - containerPort: 5432
         env:
-        # 🚨 ดึงรหัสผ่านแบบปลอดภัยจาก Secret ที่เราสร้างไว้
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -28,9 +29,7 @@ spec:
         - name: POSTGRES_USER
           value: "postgres"
         - name: POSTGRES_DB
-          value: "sut_attendance" # ชื่อ Database เริ่มต้นที่ให้สร้างขึ้นมา
-        
-        # 💾 สั่งให้เซฟข้อมูลลงใน PVC เพื่อกันข้อมูลหาย
+          value: "sut_attendance"
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: postgres-storage

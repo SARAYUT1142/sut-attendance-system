@@ -4,6 +4,7 @@ metadata:
   name: backend-deployment
   namespace: default
 spec:
+  progressDeadlineSeconds: 300
   replicas: 1
   selector:
     matchLabels:
@@ -13,6 +14,10 @@ spec:
       labels:
         app: backend
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox
+        command: ['sh', '-c', 'until nc -z sut-postgres-service 5432; do echo waiting for postgres; sleep 2; done']
       containers:
       - name: backend
         image: sarayut1234/sut-attendance-backend:latest
@@ -47,14 +52,14 @@ spec:
             memory: 512Mi
         livenessProbe:
           httpGet:
-            path: /health     # ← เปลี่ยนให้ตรงกับ endpoint จริงของ backend
+            path: /health
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /health     # ← เปลี่ยนให้ตรงกับ endpoint จริงของ backend
+            path: /health
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 5
