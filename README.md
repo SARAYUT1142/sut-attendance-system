@@ -79,11 +79,15 @@ sut-attendance/
 │       ├── go.mod
 │       └── Dockerfile
 ├── Jenkinsfile             # CI/CD pipeline definition
-├── terraform/              # Provisioning resources
+├── terraform/
+│   ├── main.tf          # ไฟล์หลักสำหรับสั่งสร้าง VM
+│   └── variables.tf     # เก็บตัวแปรต่างๆ
+└── ansible/
+│    └── playbook.yml     # ไฟล์สำหรับเข้าไปเซ็ตอัพเครื่องหลังสร้างเสร็จ
 ├── ansible/                # Config server & Postgres setup
 ├── k8s/                    # โฟลเดอร์เก็บไฟล์ Kubernetes ทั้งหมด
 │    │
-│   ├── frontend/           # กลุ่มไฟล์สำหรับหน้าบ้าน
+│    ├── frontend/           # กลุ่มไฟล์สำหรับหน้าบ้าน
 │    │   ├── deployment.yaml
 │    │   └── service.yaml
 │    │
@@ -98,7 +102,13 @@ sut-attendance/
 │    │   └── secret.yaml     # ซ่อน Username/Password ของ DB ให้ปลอดภัย
 │    │
 │    └── ingress.yaml        # ย้ายพนักงานต้อนรับมาไว้ข้างนอกสุด เพื่อจัดการเส้นทางทั้งระบบ
-├── monitoring/
+├── monitoring/              # 👈 โครงสร้างใหม่ที่แบ่งโฟลเดอร์ย่อยสวยงาม
+│    ├── grafana/
+│    │      └── deployment.yaml  # ไฟล์สร้าง Pod และ Service ของ Grafana
+│    │
+│    └── prometheus/
+│            ├── config.yaml      # ไฟล์ ConfigMap ชี้เป้าไปหา Backend
+│            └── deployment.yaml  # ไฟล์สร้าง Pod และ Service ของ Prometheus
 └── README.md
 ```
 
