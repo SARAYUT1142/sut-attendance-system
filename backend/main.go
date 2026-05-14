@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -22,6 +23,12 @@ func main() {
 	config.AllowAllOrigins = true
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
 	r.Use(cors.New(config))
+
+	// เติม 2 บรรทัดนี้ลงไป เพื่อเปิด Route /metrics 👇
+    prometheusHandler := promhttp.Handler()
+    r.GET("/metrics", func(c *gin.Context) {
+        prometheusHandler.ServeHTTP(c.Writer, c.Request)
+    })
 
 	// Health check endpoint สำหรับ Kubernetes probe
 	r.GET("/health", func(c *gin.Context) {
