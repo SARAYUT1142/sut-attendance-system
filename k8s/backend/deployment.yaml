@@ -16,7 +16,7 @@ spec:
     spec:
       initContainers:
       - name: wait-for-postgres
-        image: busybox
+        image: alpine:latest
         command: ['sh', '-c', 'until nc -z sut-postgres-service 5432; do echo waiting for postgres; sleep 2; done']
       containers:
       - name: backend
