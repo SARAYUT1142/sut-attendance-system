@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 deleteDir()
-                git branch: 'main',
+                git branch: 'vm',
                     credentialsId: 'github-creds',
                     url: 'https://github.com/SARAYUT1142/sut-attendance-system.git'
             }
