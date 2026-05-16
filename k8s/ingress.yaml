@@ -3,27 +3,23 @@ kind: Ingress
 metadata:
   name: attendance-ingress
   namespace: default
-  # ลบ annotation แบบเก่าออก และไปใช้ ingressClassName ด้านล่างแทน
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
 spec:
-  ingressClassName: nginx # บอก K8s ว่าใช้ Nginx (มาตรฐานใหม่ที่ปลอดภัยกว่า)
   rules:
-  - host: sut-attendance-system  # ใช้โดเมนจริงของโปรเจค
-    http:
+  - http:
       paths:
-      # 1. จัดการฝั่ง API (ต้องเอาไว้บนสุดเพื่อให้มันเช็คก่อน)
       - path: /api
         pathType: Prefix
         backend:
           service:
-            name: backend-service # ชื่อ Service ของ Go Backend ที่เราสร้างไว้
+            name: backend-service
             port:
               number: 8080
-
-      # 2. จัดการฝั่งหน้าเว็บปกติ
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: attendance-frontend-svc # อ้างอิงไปหา Service ของ React
+            name: attendance-frontend-svc
             port:
               number: 80
